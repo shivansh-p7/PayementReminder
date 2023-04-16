@@ -10,7 +10,10 @@ router.post("/login",userLogin);
 router.get("/user",Authentication,getUser)
 
 
+router.get("/check",(req,res)=>{
+   res.send("hello everything is ok")
 
+});
 
 
 
