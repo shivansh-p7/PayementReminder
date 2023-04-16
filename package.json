@@ -1,5 +1,5 @@
 {
-  "name": "payementreminder",
+  "name": "ReminderApp",
   "version": "1.0.0",
   "description": "An application which reminds about the due payments",
   "main": "index.js",
