@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1" 
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "condurrently \"ce../demo -app && num run start\"\" npm run start\""
   },
   "repository": {
     "type": "git",
