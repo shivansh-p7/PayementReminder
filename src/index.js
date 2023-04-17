@@ -16,6 +16,20 @@ mongoose.connect("mongodb+srv://shivanshsharma:76Xjx6fMmlcP51HZ@shivansh-p7.zwfa
 app.use("/",route);
 
 
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    );
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "X-Requested-With,content-type"
+    );
+    res.setHeader("Access-Control-Allow-Credentials", true);
+next();
+});
+
 
 app.listen(5000,()=>{
     console.log("server is running on port 5000")

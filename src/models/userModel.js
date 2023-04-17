@@ -15,6 +15,11 @@ const userSchema= new mongoose.Schema({
         trim: true
 
     },
+    profileImage: {
+        type: String,
+        default:"image.jpeg",
+        trim: true
+    },
     email: {
         type: String,
         required: true,

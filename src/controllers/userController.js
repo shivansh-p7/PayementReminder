@@ -2,8 +2,9 @@ const { default: mongoose } = require("mongoose");
 const UserModel=require("../models/userModel");
 const jwt=require("jsonwebtoken")
 const bcrypt=require('bcrypt');
-const {isValidEmail,isValidMobileNumber,isValidpassword,isValidImage}=require('../validations/validator')
-
+const {isValidEmail,isValidMobileNumber,isValidpassword}=require('../validations/validator')
+const { uploadImage } = require('../middlwares/aws')
+const aws = require('aws-sdk');
 const userRegister=async(req,res)=>{
 try {
     let {fname,lname,mobile,email,password}=req.body;
@@ -27,7 +28,7 @@ try {
     const isDuplicateEmail = await UserModel.findOne({ $or: [{ email: email }, { mobile: mobile }] })
     if (isDuplicateEmail) {
         if (isDuplicateEmail.email == email) { return res.status(400).send({ status: false, message: `This EmailId: ${email} is already exist!` }) }
-        if (isDuplicateEmail.mobile == mobile) { return res.status(400).send({ status: false, message: `This Phone No.: ${mobile} is already exist!` }) }
+        if (isDuplicateEmail.mobile == mobile) { return res.status(400).send({ status: false, message: `This mobile No.: ${mobile} is already exist!` }) }
     }
 
     if(!password) return res.status.send({status:false, message:"password is required"})
@@ -106,6 +107,66 @@ const getUser=async(req,res)=>{
     }
 }
 
+const updateUser=async(req,res)=>{
+  try {
+      let {fname,lname,userId,email,mobile,image} = req.body;
+
+      let final = {}
+        
+
+      if (fname) {
+          if (!/^[a-zA-Z]{1,30}$/.test(fname)) return res.status(400).send({ status: false, message: "Please Enter Valid first-Name" })
+          final.fname = fname
+      }
+
+      if (lname) {
+       
+          if (!/^[a-zA-Z]{1,30}$/.test(lname)) return res.status(400).send({ status: false, message: "Please Enter Valid Last-Name" })
+          final.lname = lname
+      }
+
+      if (email) {
+      
+          if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Please Enter valid Email" })
+
+          let isEmailExist = await UserModel.findOne({ email: email })
+          if (isEmailExist) return res.status(400).send({ status: false, message: `This email Id.: ${email} is already exist!` })
+          final.email = email
+      }
+
+      if (mobile) {
+        
+          if (!isValidMobileNumber(mobile)) return res.status(400).send({ status: false, message: "Please Enter valid mobile number" })
+
+          let isMobileExit = await UserModel.findOne({ mobile: mobile })
+          if (isMobileExit) return res.status(400).send({ status: false, message: `This mobile No.: ${mobile} is already exist!` })
+          final.mobile = mobile
+      }
+
+      if (password) {
+         
+          if (!isValidpassword(password)) return res.status(400).send({ status: false, message: "Please put uppercase, lowercase, number, special character and length between 8 to 15" })
+
+          const hashedPassword = await bcrypt.hash(password, 12)
+          final.password = hashedPassword
+      }
+
+      let profileImages = req.files
+        if (profileImages && profileImages.length > 0) {
+            let url = await uploadImage(profileImages[0])
+            final.profileImage = url
+        }
+
+        const updatedUser = await userModel.findOneAndUpdate({ _id: userId }, final, { new: true }).select({__v:0})
+        if (!updatedUser) return res.status(404).send({ status: false, message: "User does not exist" })
 
 
-module.exports={userRegister,userLogin,getUser}
+
+        return res.status(200).send({ status: true, message: "Successfully Updated", data: updatedUser })
+
+  } catch (error) {
+      return res.status(500).send({ status: false, message: error.message })
+  }
+}
+
+module.exports={userRegister,userLogin,getUser,updateUser}

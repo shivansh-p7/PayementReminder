@@ -4,7 +4,7 @@
   "description": "An application which reminds about the due payments",
   "main": "index.js",
   "scripts": {
-   "start": "node src/index.js",
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "condurrently \"ce../demo -app && num run start\"\" npm run start\""
   },
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/shivansh-p7/PayementReminder#readme",
   "dependencies": {
+    "aws-sdk": "^2.1359.0",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
